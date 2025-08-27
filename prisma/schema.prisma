@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Profile {
+  id           String   @id @default(cuid())
+  greeting     String   @default("Hello, I am")
+  name         String
+  title        String
+  bio          String?  @db.Text
+  skills       String[]
+  profileImage String?
+  resumeUrl    String?
+  linkedinUrl  String?
+  githubUrl    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("profiles")
+}
+
+model Stat {
+  id         String @id @default(cuid())
+  number     String
+  label      String
+  icon       String
+  background String
+  order      Int    @default(0)
+
+  @@map("stats")
+}
+
+model AboutSection {
+  id          String   @id @default(cuid())
+  description String   @db.Text
+  tools       String[]
+  expertise   String[]
+  conclusion  String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("about_sections")
+}
+
+model Project {
+  id               String   @id @default(cuid())
+  title            String
+  domain           String
+  badge            String
+  description      String   @db.Text
+  details          String   @db.Text
+  cardGradient     String
+  cardLabel        String
+  youtubeId        String?
+  githubUrl        String?
+  images           String[] // URLs des images
+  published        Boolean  @default(true)
+  viewCount        Int      @default(0)
+  order            Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  projectViews     Analytics[] @relation("ProjectAnalytics")
+
+  @@map("projects")
+}
+
+model Analytics {
+  id          String   @id @default(cuid())
+  visitorId   String
+  sessionId   String
+  page        String
+  projectId   String?
+  timestamp   DateTime @default(now())
+  ipAddress   String?
+  userAgent   String?
+  duration    Int?     // Durée en secondes
+  
+  project     Project? @relation("ProjectAnalytics", fields: [projectId], references: [id])
+
+  @@map("analytics")
+}
+
+model Session {
+  id          String   @id @default(cuid())
+  sessionId   String   @unique
+  visitorId   String
+  startTime   DateTime @default(now())
+  endTime     DateTime?
+  pageViews   Int      @default(0)
+  lastPage    String?
+  
+  @@map("sessions")
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // Mot de passe hashé
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
