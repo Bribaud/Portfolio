@@ -174,16 +174,34 @@ export default function PortfolioPage() {
 
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Détails */}
-            <div className="bg-white p-8 rounded-xl shadow-sm">
-              <h2 className="text-2xl font-bold mb-6">Détails du Projet</h2>
-              <div className="space-y-4">
-                {project.details.split('\n\n').map((paragraph, index) => (
-                  <p key={index} className="text-gray-600 leading-relaxed">
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-            </div>
+<div className="bg-white p-8 rounded-xl shadow-sm">
+  <h2 className="text-2xl font-bold mb-6">Détails du Projet</h2>
+  <div className="space-y-4">
+    {project.details.split('\n\n').map((paragraph, index) => {
+      // Titres avec ##
+      if (paragraph.startsWith('## ')) {
+        return (
+          <h3 key={index} className="text-xl font-bold text-gray-900 mt-6 mb-4">
+            {paragraph.replace('## ', '')}
+          </h3>
+        )
+      }
+      
+      // Traiter le texte en gras **texte**
+      const processedText = paragraph
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>')
+      
+      return (
+        <div 
+          key={index} 
+          className="text-gray-600 leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: processedText }}
+        />
+      )
+    })}
+  </div>
+</div>
 
             {/* Vidéo */}
             <div className="bg-white p-8 rounded-xl shadow-sm">
